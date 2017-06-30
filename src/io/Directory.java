@@ -31,28 +31,38 @@ public final class Directory {
             dirs.addAll(other.dirs);
         }
         public String toString() {
-
+            return "dirs: " + PPrint.pformat(this.dirs) +
+                    "\n files: \n" + PPrint.pformat(this.files);
         }
     }
     public static TreeInfo walk(String start, String regex) {
-
+        return recuseDirs(new File(start), regex);
     }
     public static TreeInfo walk(File start, String regex) {
-
+        return recuseDirs(start, regex);
     }
     public static TreeInfo walk(File start) {
-
+        return recuseDirs(start, ".*");
     }
     public static TreeInfo walk(String start) {
-
+        return recuseDirs(new File(start), ".*");
     }
     static TreeInfo recuseDirs(File startDir, String regex) {
-
+        TreeInfo treeInfo = new TreeInfo();
+        File[] files = startDir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                treeInfo.dirs.add(file);
+                treeInfo.addAll(recuseDirs(file,regex));
+            } else {
+                if (file.getName().matches(regex)) {
+                    treeInfo.files.add(file);
+                }
+            }
+        }
+        return treeInfo;
     }
     public static void main(String[] args) {
-        File[] files = local(new File(root),".*\\.txt");
-        for (File file : files) {
-            System.out.println(file.getName());
-        }
+        System.out.println(walk("C:\\Users\\anony\\Documents\\Directory_Data"));
     }
 }
