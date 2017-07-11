@@ -1,7 +1,7 @@
 package jenkovTutorial.RandomAccessFile;
 
-import java.io.RandomAccessFile;
-import java.io.IOException;
+import java.io.*;
+import java.io.File;
 
 /**
  * Created by anonymous.vn1985@gmail.com
