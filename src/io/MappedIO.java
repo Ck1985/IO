@@ -29,12 +29,13 @@ public class MappedIO {
         public abstract void test() throws IOException;
     }
     private static Tester[] tests = {
-            new Tester("StreamWrite") {
+            new Tester("Stream Write") {
                 public void test() throws IOException {
                     DataOutputStream dos = new DataOutputStream(
                             new BufferedOutputStream(
                                     new FileOutputStream(
-                                            new File("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\temp.tmp"))
+                                            new File("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\temp.tmp")
+                                    )
                             )
                     );
                     for (int i = 0; i < numOfInts; i++) {
@@ -43,7 +44,7 @@ public class MappedIO {
                     dos.close();
                 }
             },
-            new Tester("MappedWrite") {
+            new Tester("Mapped Write") {
                 public void test() throws IOException {
                     FileChannel fc = new RandomAccessFile("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\temp.tmp","rw").getChannel();
                     ByteBuffer bb = fc.map(FileChannel.MapMode.READ_WRITE,0,fc.size());
@@ -53,8 +54,58 @@ public class MappedIO {
                     }
                     fc.close();
                 }
+            },
+            new Tester("Stream Read") {
+                public void test() throws IOException {
+                    DataInputStream dis = new DataInputStream(
+                            new BufferedInputStream(
+                                    new FileInputStream("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\temp.tmp")
+                            )
+                    );
+                    for (int i = 0; i < numOfInts; i++) {
+                        dis.readInt();
+                    }
+                    dis.close();
+                }
+            },
+            new Tester("Mapped Read") {
+                public void test() throws IOException {
+                    FileChannel fc = new FileInputStream("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\temp.tmp").getChannel();
+                    IntBuffer ib = fc.map(FileChannel.MapMode.READ_ONLY,0,fc.size()).asIntBuffer();
+                    while (ib.hasRemaining()) {
+                        ib.get();
+                    }
+                    fc.close();
+                }
+            },
+            new Tester("Stream Read/Write") {
+                public void test() throws IOException {
+                    RandomAccessFile raf = new RandomAccessFile(new File("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\temp.tmp"), "rw");
+                    raf.writeInt(1);
+                    for (int i  = 0; i < numOfUBuffInts; i++) {
+                        raf.seek(raf.length() - 4);
+                        raf.writeInt(raf.read());
+                    }
+                    raf.close();
+                }
+            },
+            new Tester("Mapped Read/Writer") {
+                public void test() throws IOException{
+                    FileChannel fc = new RandomAccessFile(
+                            new File("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\temp.tmp"),"rw"
+                    ).getChannel();
+                    IntBuffer ib = fc.map(FileChannel.MapMode.READ_WRITE,0,fc.size()).asIntBuffer();
+                    ib.put(0);
+                    for (int i = 1; i < numOfUBuffInts; i++) {
+                        ib.put(ib.get(i - 1));
+                    }
+                    fc.close();
+                }
             }
     };
     public static void main(String[] args) {
+        for (Tester test : tests) {
+            test.runTest();
+        }
     }
 }
