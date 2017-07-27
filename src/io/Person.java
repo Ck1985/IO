@@ -37,4 +37,19 @@ public class Person {
         serializer.write(doc);
         serializer.flush();
     }
+    public static void main(String[] args) throws Exception {
+        List<Person> people = Arrays.asList(
+                new Person("Dr Bunsen","Honeydew"),
+                new Person("Gonzo","The Great"),
+                new Person("Philip J.", "Fry")
+                );
+        System.out.println(people);
+        Element root = new Element("people");
+        for (Person p : people) {
+            root.appendChild(p.getXML());
+        }
+        Document doc = new Document(root);
+        format(System.out,doc);
+        format(new BufferedOutputStream(new FileOutputStream("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\People.xml")),doc);
+    }
 }
