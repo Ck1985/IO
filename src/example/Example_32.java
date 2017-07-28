@@ -22,18 +22,23 @@ public class Example_32 {
         }
         return resultMap;
     }
-    public Element storeXML() {
-        Element hashMap = new Element("HashMap");
-        Element key = new Element("Key");
-        Element value = new Element("Value");
+    public static Element storeXML() {
+        Element root = new Element("Words");
+        Element entry = null;
+        Element key = null;
+        Element value = null;
         Set<Map.Entry<String,Integer>> entrySet = resultMap.entrySet();
-        for (Map.Entry<String,Integer> entry : entrySet) {
-            key.appendChild(entry.getKey());
-            value.appendChild(entry.getValue().toString());
+        for (Map.Entry<String,Integer> ent : entrySet) {
+            key = new Element("Key");
+            value = new Element("Value");
+            entry = new Element("Entry");
+            key.appendChild(ent.getKey());
+            value.appendChild(ent.getValue().toString());
+            entry.appendChild(key);
+            entry.appendChild(value);
+            root.appendChild(entry);
         }
-        hashMap.appendChild(key);
-        hashMap.appendChild(value);
-        return hashMap;
+        return root;
     }
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -50,12 +55,14 @@ public class Example_32 {
         serializer.write(doc);
         serializer.flush();
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String filename = "C:\\Users\\anony\\Documents\\Directory_Data\\Data\\Company.java";
         Example_32.countOccurenceWords(filename);
         Example_32 ex = new Example_32();
         System.out.println(ex);
-        Element root = new Element("Word");
-        Set<Map.Entry<String,Integer>> setEntry =
+        Element root = storeXML();
+        Document doc = new Document(root);
+        format(System.out, doc);
+        format(new BufferedOutputStream(new FileOutputStream("C:\\Users\\anony\\Documents\\Directory_Data\\Data\\Example_32.out")), doc);
     }
 }
